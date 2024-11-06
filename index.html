@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Template</title>
+  <title>Responsive Image Template with Cropping</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <style>
     body {
       display: flex;
@@ -14,94 +16,146 @@
       padding: 20px;
     }
 
+    h2 {
+      text-align: center;
+    }
+
+    /* Template container - responsive */
     .template-container {
       position: relative;
-      width: 500px;
-      height: 600px;
-      background-image: url('template.jpg'); /* Replace with actual path to the template */
+      width: 90%; /* Adjust to fit mobile and desktop screens */
+      max-width: 500px; /* Max width for larger screens */
+      aspect-ratio: 5 / 6; /* Keep consistent aspect ratio */
+      background-image: url('template.jpg'); /* Replace with actual template image path */
       background-size: cover;
       background-position: center;
+      margin-bottom: 20px;
     }
 
     /* Circle frame for the uploaded image */
     .circle-frame {
       position: absolute;
-      top: 264px; /* Adjust to match the circle position */
-      left: 70px; /* Adjust to match the circle position */
-      width: 142px; /* Match the circle size */
-      height: 135px;
+      top: 44%; /* Responsive position based on aspect ratio */
+      left: 14%; /* Adjust for actual circle position */
+      width: 28%; /* Responsive circle size */
+      height: 23%;
       border-radius: 50%;
       overflow: hidden;
-      border: 3px solid #fff; /* Border color around the circle */
+      border: 3px solid #fff;
     }
 
-    /* File input */
-    .upload-button, .download-button {
-      margin-top: 20px;
+    /* Image crop container */
+    .crop-container img {
+      max-width: 100%;
+    }
+
+    /* Buttons */
+    .upload-button, .crop-button, .download-button {
+      margin-top: 15px;
       padding: 10px 20px;
       font-size: 16px;
+      cursor: pointer;
+    }
+
+    .crop-container {
+      display: none;
+      width: 90%; /* Full width for smaller screens */
+      max-width: 400px; /* Set max width for larger screens */
+    }
+
+    /* Responsive styling for smaller screens */
+    @media (max-width: 600px) {
+      .upload-button, .crop-button, .download-button {
+        font-size: 14px;
+        padding: 8px 15px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h2>Upload Your Photo</h2>
-  
-  <!-- File input for uploading the image -->
-  <input type="file" accept="image/*" id="fileInput" class="upload-button">
+  <h2>Upload and Crop Your Photo</h2>
 
-  <!-- Template container with the circle frame (for display only) -->
+  <!-- File input and buttons -->
+  <input type="file" accept="image/*" id="fileInput" class="upload-button">
+  <button class="crop-button" id="cropButton" style="display: none;">Crop & Place Image</button>
+  <button class="download-button" id="downloadButton" style="display: none;">Download Template</button>
+
+  <!-- Cropper container -->
+  <div class="crop-container" id="cropContainer">
+    <img id="cropImage" alt="Crop your photo">
+  </div>
+
+  <!-- Template container with circle frame -->
   <div class="template-container" id="templateContainer">
     <div class="circle-frame">
-      <img id="uploadedImage" alt="Your photo">
+      <img id="uploadedImage" alt="Cropped photo">
     </div>
   </div>
 
-  <!-- Button to download the final image -->
-  <button class="download-button" id="downloadButton" style="display: none;">Download Template</button>
-
   <script>
-    // Load the uploaded image
+    let cropper;
+
+    // Step 1: Load and display the uploaded image for cropping
     document.getElementById('fileInput').addEventListener('change', function(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          const uploadedImage = document.getElementById('uploadedImage');
-          uploadedImage.src = e.target.result;
-          
-          // Show the download button after uploading an image
-          document.getElementById('downloadButton').style.display = 'block';
+          document.getElementById('cropImage').src = e.target.result;
+          document.getElementById('cropContainer').style.display = 'block';
+          document.getElementById('cropButton').style.display = 'inline-block';
+
+          // Initialize Cropper.js
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(document.getElementById('cropImage'), {
+            aspectRatio: 1, // Keep the aspect ratio to make it a circle
+            viewMode: 1,
+            autoCropArea: 1
+          });
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // Download the final image
+    // Step 2: Crop and place the image on the template
+    document.getElementById('cropButton').addEventListener('click', function() {
+      const canvas = cropper.getCroppedCanvas({
+        width: 284, // Adjust size to match high-res circle size
+        height: 270
+      });
+
+      document.getElementById('uploadedImage').src = canvas.toDataURL();
+      document.getElementById('cropContainer').style.display = 'none';
+      document.getElementById('cropButton').style.display = 'none';
+      document.getElementById('downloadButton').style.display = 'inline-block';
+    });
+
+    // Step 3: Download the final image with high resolution
     document.getElementById('downloadButton').addEventListener('click', function() {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
-      const templateContainer = document.getElementById('templateContainer');
-      
-      // Set canvas dimensions to match the template
-      canvas.width = templateContainer.offsetWidth;
-      canvas.height = templateContainer.offsetHeight;
 
-      // Draw the template image onto the canvas
+      // Set high-resolution dimensions
+      const TEMPLATE_WIDTH = 1000;
+      const TEMPLATE_HEIGHT = 1200;
+      canvas.width = TEMPLATE_WIDTH;
+      canvas.height = TEMPLATE_HEIGHT;
+
+      // Draw the template image at high resolution
       const templateImage = new Image();
-      templateImage.src = 'template.jpg'; // Replace with actual path to template
+      templateImage.src = 'template.jpg'; // Replace with high-res template path
 
       templateImage.onload = function() {
         context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw the uploaded image onto the canvas
+        // Draw the cropped image in high resolution
         const uploadedImage = document.getElementById('uploadedImage');
-        const circleX = 70; // X position of the circle frame
-        const circleY = 264; // Y position of the circle frame
-        const circleWidth = 142; // Width of the circle frame
-        const circleHeight = 135; // Height of the circle frame
+        const circleX = 140;
+        const circleY = 528;
+        const circleWidth = 284;
+        const circleHeight = 270;
 
-        // Wait until uploaded image is loaded to draw it on the canvas
         const userImage = new Image();
         userImage.src = uploadedImage.src;
         userImage.onload = function() {
@@ -113,9 +167,9 @@
           context.drawImage(userImage, circleX, circleY, circleWidth, circleHeight);
           context.restore();
 
-          // Trigger download of the canvas image
+          // Trigger download
           const link = document.createElement('a');
-          link.download = 'template_with_image.png';
+          link.download = 'template_with_image_high_res.png';
           link.href = canvas.toDataURL('image/png');
           link.click();
         };
