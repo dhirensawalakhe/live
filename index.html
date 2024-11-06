@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Image Template with Cropping</title>
+  <title>Image Template</title>
+
+  <!-- Open Graph meta tags for social media preview -->
+  <meta property="og:title" content="Image Template Project">
+  <meta property="og:description" content="Easily upload and crop your photo within our template, and download for social sharing.">
+  <meta property="og:image" content="https://yourusername.github.io/your-repo-name/thumbnail.jpg">
+  <meta property="og:url" content="https://yourusername.github.io/your-repo-name/">
+  <meta property="og:type" content="website">
+  <meta property="twitter:card" content="summary_large_image"> <!-- For Twitter large thumbnail -->
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <style>
@@ -14,9 +23,6 @@
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
       padding: 20px;
-    }
-
-    h2 {
       text-align: center;
     }
 
@@ -25,7 +31,7 @@
       width: 90%;
       max-width: 500px;
       aspect-ratio: 5 / 6;
-      background-image: url('template.jpg'); /* Replace with actual template image path */
+      background-image: url('template.jpg');
       background-size: cover;
       background-position: center;
       margin-bottom: 20px;
@@ -51,15 +57,15 @@
       object-fit: cover;
     }
 
-    .crop-container img {
-      max-width: 100%;
-    }
-
     .upload-button, .crop-button, .download-button {
       margin-top: 15px;
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
+    }
+
+    .crop-container img {
+      max-width: 100%;
     }
 
     .crop-container {
@@ -68,7 +74,6 @@
       max-width: 400px;
     }
 
-    /* Responsive styling for smaller screens */
     @media (max-width: 600px) {
       .upload-button, .crop-button, .download-button {
         font-size: 14px;
@@ -101,7 +106,7 @@
   <script>
     let cropper;
 
-    // Step 1: Load and display the uploaded image for cropping
+    // Load and display the uploaded image for cropping
     document.getElementById('fileInput').addEventListener('change', function(event) {
       const file = event.target.files[0];
       if (file) {
@@ -111,10 +116,9 @@
           document.getElementById('cropContainer').style.display = 'block';
           document.getElementById('cropButton').style.display = 'inline-block';
 
-          // Initialize Cropper.js
           if (cropper) cropper.destroy();
           cropper = new Cropper(document.getElementById('cropImage'), {
-            aspectRatio: 1, // Keep the aspect ratio to make it a circle
+            aspectRatio: 1,
             viewMode: 1,
             autoCropArea: 1
           });
@@ -123,10 +127,10 @@
       }
     });
 
-    // Step 2: Crop and place the image on the template
+    // Crop and place the image on the template
     document.getElementById('cropButton').addEventListener('click', function() {
       const canvas = cropper.getCroppedCanvas({
-        width: 284, // Adjust size to match high-res circle size
+        width: 284,
         height: 270
       });
 
@@ -136,25 +140,22 @@
       document.getElementById('downloadButton').style.display = 'inline-block';
     });
 
-    // Step 3: Download the final image with high resolution
+    // Download the final image with high resolution
     document.getElementById('downloadButton').addEventListener('click', function() {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
-      // Set high-resolution dimensions
       const TEMPLATE_WIDTH = 1000;
       const TEMPLATE_HEIGHT = 1200;
       canvas.width = TEMPLATE_WIDTH;
       canvas.height = TEMPLATE_HEIGHT;
 
-      // Draw the template image at high resolution
       const templateImage = new Image();
-      templateImage.src = 'template.jpg'; // Replace with high-res template path
+      templateImage.src = 'template.jpg';
 
       templateImage.onload = function() {
         context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw the cropped image in high resolution
         const uploadedImage = document.getElementById('uploadedImage');
         const circleX = 140;
         const circleY = 528;
@@ -172,7 +173,6 @@
           context.drawImage(userImage, circleX, circleY, circleWidth, circleHeight);
           context.restore();
 
-          // Trigger download
           const link = document.createElement('a');
           link.download = 'template_with_image_high_res.png';
           link.href = canvas.toDataURL('image/png');
