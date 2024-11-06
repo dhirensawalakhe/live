@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Template</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    .template-container {
+      position: relative;
+      width: 500px;
+      height: 600px;
+      background-image: url('template.jpg'); /* Replace with actual path to the template */
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Circle frame for the uploaded image */
+    .circle-frame {
+      position: absolute;
+      top: 264px; /* Adjust to match the circle position */
+      left: 70px; /* Adjust to match the circle position */
+      width: 142px; /* Match the circle size */
+      height: 135px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #fff; /* Border color around the circle */
+    }
+
+    /* File input */
+    .upload-button, .download-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Upload Your Photo</h2>
+  
+  <!-- File input for uploading the image -->
+  <input type="file" accept="image/*" id="fileInput" class="upload-button">
+
+  <!-- Template container with the circle frame (for display only) -->
+  <div class="template-container" id="templateContainer">
+    <div class="circle-frame">
+      <img id="uploadedImage" alt="Your photo">
+    </div>
+  </div>
+
+  <!-- Button to download the final image -->
+  <button class="download-button" id="downloadButton" style="display: none;">Download Template</button>
+
+  <script>
+    // Load the uploaded image
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const uploadedImage = document.getElementById('uploadedImage');
+          uploadedImage.src = e.target.result;
+          
+          // Show the download button after uploading an image
+          document.getElementById('downloadButton').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Download the final image
+    document.getElementById('downloadButton').addEventListener('click', function() {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const templateContainer = document.getElementById('templateContainer');
+      
+      // Set canvas dimensions to match the template
+      canvas.width = templateContainer.offsetWidth;
+      canvas.height = templateContainer.offsetHeight;
+
+      // Draw the template image onto the canvas
+      const templateImage = new Image();
+      templateImage.src = 'template.jpg'; // Replace with actual path to template
+
+      templateImage.onload = function() {
+        context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
+
+        // Draw the uploaded image onto the canvas
+        const uploadedImage = document.getElementById('uploadedImage');
+        const circleX = 70; // X position of the circle frame
+        const circleY = 264; // Y position of the circle frame
+        const circleWidth = 142; // Width of the circle frame
+        const circleHeight = 135; // Height of the circle frame
+
+        // Wait until uploaded image is loaded to draw it on the canvas
+        const userImage = new Image();
+        userImage.src = uploadedImage.src;
+        userImage.onload = function() {
+          context.save();
+          context.beginPath();
+          context.arc(circleX + circleWidth / 2, circleY + circleHeight / 2, circleWidth / 2, 0, Math.PI * 2, true);
+          context.closePath();
+          context.clip();
+          context.drawImage(userImage, circleX, circleY, circleWidth, circleHeight);
+          context.restore();
+
+          // Trigger download of the canvas image
+          const link = document.createElement('a');
+          link.download = 'template_with_image.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        };
+      };
+    });
+  </script>
+
+</body>
+</html>
