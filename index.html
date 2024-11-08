@@ -184,3 +184,31 @@
 
 </body>
 </html>
+const backendUrl = "https://your-service-name.onrender.com"; // Replace with your actual Render URL
+
+// Example: Download template on button click
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  // This triggers the download from the backend's /download route
+  window.location.href = `${backendUrl}/download`;
+});
+
+// Example: Upload photo via the /upload route
+document.getElementById("uploadForm").addEventListener("submit", (event) => {
+  event.preventDefault(); // Prevent page refresh on form submission
+  
+  const formData = new FormData();
+  formData.append("photo", document.getElementById("photoInput").files[0]);
+  
+  fetch(`${backendUrl}/upload`, {
+    method: "POST",
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Uploaded successfully:", data);
+    })
+    .catch(error => {
+      console.error("Error uploading image:", error);
+    });
+});
+
