@@ -1,22 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1BF5HE8B5B"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-1BF5HE8B5B');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1BF5HE8B5B"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1BF5HE8B5B');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Template</title>
+  <title>Support Sumit Wankhede BJP</title>
 
   <!-- Open Graph meta tags for social media preview -->
-  <meta property="og:title" content="Vote for SUMIT 2024">
+  <meta property="og:title" content="Support Sumit Wankhede 2024">
   <meta property="og:description" content="Vote for your bright future">
   <meta property="og:image" content="https://dhirensawalakhe.github.io/live/thumbnail.jpg">
   <meta property="og:url" content="https://dhirensawalakhe.github.io/live/">
@@ -49,13 +46,13 @@
 
     .circle-frame {
       position: absolute;
-      top: 44%; /* Adjust to align with circle on the template */
-      left: 14%; /* Adjust to align with circle on the template */
-      width: 28%;
+      top: 43.8%;
+      left: 14.6%;
+      width: 27%;
       height: 23%;
       border-radius: 50%;
       overflow: hidden;
-      border: 3px solid #fff;
+      border: 3px solid #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -67,11 +64,21 @@
       object-fit: cover;
     }
 
-    .upload-button, .crop-button, .download-button {
+    .upload-button, .crop-button, .download-button, .share-button {
       margin-top: 15px;
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
+    }
+
+    .upload-label {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
     }
 
     .crop-container img {
@@ -84,11 +91,21 @@
       max-width: 400px;
     }
 
-    @media (max-width: 600px) {
-      .upload-button, .crop-button, .download-button {
-        font-size: 14px;
-        padding: 8px 15px;
-      }
+    .social-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="file"] {
+      display: none; /* Hide the default file input */
+    }
+
+    .loading-message {
+      display: none;
+      font-size: 18px;
+      color: #333;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -96,8 +113,10 @@
 
   <h2>Upload and Crop Your Photo</h2>
 
-  <!-- File input and buttons -->
-  <input type="file" accept="image/*" id="fileInput" class="upload-button">
+  <!-- File input with label as "Insert Photo" button -->
+  <label for="fileInput" class="upload-label">Insert Photo</label>
+  <input type="file" accept="image/*" id="fileInput">
+
   <button class="crop-button" id="cropButton" style="display: none;">Crop & Place Image</button>
   <button class="download-button" id="downloadButton" style="display: none;">Download Template</button>
 
@@ -105,17 +124,25 @@
   <div class="crop-container" id="cropContainer">
     <img id="cropImage" alt="Crop your photo">
   </div>
-  
 
   <!-- Template container with circle frame -->
   <div class="template-container" id="templateContainer">
     <div class="circle-frame">
-      <img id="uploadedImage" alt="Cropped photo">
+      <img id="uploadedImage" alt="">
     </div>
+  </div>
+
+  <!-- Loading message -->
+  <div class="loading-message" id="loadingMessage">Processing your image...</div>
+
+  <!-- Social Media Buttons -->
+  <div class="social-buttons" id="socialButtons" style="display: none;">
+    <button class="share-button" id="shareButton">Share Now</button>
   </div>
 
   <script>
     let cropper;
+    let uploadedImageSrc = "";
 
     // Load and display the uploaded image for cropping
     document.getElementById('fileInput').addEventListener('change', function(event) {
@@ -146,6 +173,7 @@
       });
 
       document.getElementById('uploadedImage').src = canvas.toDataURL();
+      uploadedImageSrc = canvas.toDataURL(); // Save the cropped image source
       document.getElementById('cropContainer').style.display = 'none';
       document.getElementById('cropButton').style.display = 'none';
       document.getElementById('downloadButton').style.display = 'inline-block';
@@ -188,8 +216,29 @@
           link.download = 'template_with_image_high_res.png';
           link.href = canvas.toDataURL('image/png');
           link.click();
+
+          // Show social media share button
+          document.getElementById('socialButtons').style.display = 'block';
+          document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
+
+          // Trigger mobile share on successful download
+          if (navigator.share) {
+            navigator.share({
+              title: 'Check out this photo!',
+              text: 'Support Sumit Wankhede!',
+              url: link.href
+            }).then(() => console.log('Shared successfully!'))
+              .catch((err) => console.log('Error sharing:', err));
+          } else {
+            document.getElementById('shareButton').addEventListener('click', function() {
+              window.open(link.href, '_blank');
+            });
+          }
         };
       };
+
+      // Show loading message while processing
+      document.getElementById('loadingMessage').style.display = 'block';
     });
   </script>
 
