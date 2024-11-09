@@ -212,22 +212,28 @@
           link.href = canvas.toDataURL('image/png');
           link.click();
 
-          // Show the share dialog directly after downloading
+          // Hide loading message and show social buttons
+          document.getElementById('loadingMessage').style.display = 'none';
+
+          // Directly trigger the share dialog if possible
           if (navigator.share) {
             navigator.share({
               title: 'Check out this photo!',
               text: 'Support Sumit Wankhede!',
               url: link.href
-            }).then(() => console.log('Shared successfully!'))
-              .catch((err) => console.log('Error sharing:', err));
+            }).then(() => {
+              console.log('Shared successfully!');
+            }).catch((err) => {
+              console.log('Error sharing:', err);
+            });
           } else {
-            // Fallback to showing social media buttons if `navigator.share()` is not supported
+            // If sharing is not supported, alert the user or handle fallback
             alert('Sharing is not supported on this device.');
           }
         };
       };
 
-      // Show loading message while processing
+      // Show the loading message while processing
       document.getElementById('loadingMessage').style.display = 'block';
     });
   </script>
