@@ -135,11 +135,6 @@
   <!-- Loading message -->
   <div class="loading-message" id="loadingMessage">Processing your image...</div>
 
-  <!-- Social Media Buttons -->
-  <div class="social-buttons" id="socialButtons" style="display: none;">
-    <button class="share-button" id="shareButton">Share Now</button>
-  </div>
-
   <script>
     let cropper;
     let uploadedImageSrc = "";
@@ -217,11 +212,7 @@
           link.href = canvas.toDataURL('image/png');
           link.click();
 
-          // Show social media share button
-          document.getElementById('socialButtons').style.display = 'block';
-          document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
-
-          // Trigger mobile share on successful download
+          // Share the image immediately after download
           if (navigator.share) {
             navigator.share({
               title: 'Check out this photo!',
@@ -229,10 +220,6 @@
               url: link.href
             }).then(() => console.log('Shared successfully!'))
               .catch((err) => console.log('Error sharing:', err));
-          } else {
-            document.getElementById('shareButton').addEventListener('click', function() {
-              window.open(link.href, '_blank');
-            });
           }
         };
       };
