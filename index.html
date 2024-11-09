@@ -1,112 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1BF5HE8B5B"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-1BF5HE8B5B');
-  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support Sumit Wankhede BJP</title>
-
-  <!-- Open Graph meta tags for social media preview -->
-  <meta property="og:title" content="Support Sumit Wankhede 2024">
-  <meta property="og:description" content="Vote for your bright future">
-  <meta property="og:image" content="https://dhirensawalakhe.github.io/live/thumbnail.jpg">
-  <meta property="og:url" content="https://dhirensawalakhe.github.io/live/">
-  <meta property="og:type" content="website">
-  <meta property="twitter:card" content="summary_large_image"> <!-- For Twitter large thumbnail -->
-
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .template-container {
-      position: relative;
-      width: 90%;
-      max-width: 500px;
-      aspect-ratio: 5 / 6;
-      background-image: url('template.jpg');
-      background-size: cover;
-      background-position: center;
-      margin-bottom: 20px;
-    }
-
-    .circle-frame {
-      position: absolute;
-      top: 43.8%;
-      left: 14.6%;
-      width: 27%;
-      height: 23%;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .circle-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .upload-button, .crop-button, .download-button, .share-button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .upload-label {
-      display: inline-block;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: #fff;
-      border-radius: 5px;
-    }
-
-    .crop-container img {
-      max-width: 100%;
-    }
-
-    .crop-container {
-      display: none;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .social-buttons {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
-
-    input[type="file"] {
-      display: none; /* Hide the default file input */
-    }
-
-    .loading-message {
-      display: none;
-      font-size: 18px;
-      color: #333;
-      margin-top: 20px;
-    }
+    body { display: flex; flex-direction: column; align-items: center; font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center; }
+    .template-container { position: relative; width: 90%; max-width: 500px; aspect-ratio: 5 / 6; background-image: url('template.jpg'); background-size: cover; background-position: center; margin-bottom: 20px; }
+    .circle-frame { position: absolute; top: 43.8%; left: 14.6%; width: 27%; height: 23%; border-radius: 50%; overflow: hidden; border: 3px solid #ffffff; display: flex; align-items: center; justify-content: center; }
+    .circle-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .upload-label, .crop-button, .download-button { margin-top: 15px; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; background-color: #007bff; color: #fff; }
+    .crop-container img { max-width: 100%; }
+    .crop-container { display: none; width: 90%; max-width: 400px; }
+    input[type="file"] { display: none; }
+    .loading-message { display: none; font-size: 18px; color: #333; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -139,7 +48,7 @@
     let cropper;
     let uploadedImageSrc = "";
 
-    // Load and display the uploaded image for cropping
+    // Display the uploaded image for cropping
     document.getElementById('fileInput').addEventListener('change', function(event) {
       const file = event.target.files[0];
       if (file) {
@@ -162,79 +71,67 @@
 
     // Crop and place the image on the template
     document.getElementById('cropButton').addEventListener('click', function() {
-      const canvas = cropper.getCroppedCanvas({
-        width: 282,
-        height: 270
-      });
-
+      const canvas = cropper.getCroppedCanvas({ width: 282, height: 270 });
       document.getElementById('uploadedImage').src = canvas.toDataURL();
-      uploadedImageSrc = canvas.toDataURL(); // Save the cropped image source
+      uploadedImageSrc = canvas.toDataURL();
       document.getElementById('cropContainer').style.display = 'none';
       document.getElementById('cropButton').style.display = 'none';
       document.getElementById('downloadButton').style.display = 'inline-block';
     });
 
-    // Download the final image with high resolution
-    document.getElementById('downloadButton').addEventListener('click', function() {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-
+    // Asynchronous function to load images and process canvas
+    async function processAndDownloadImage() {
       const TEMPLATE_WIDTH = 1000;
       const TEMPLATE_HEIGHT = 1200;
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
       canvas.width = TEMPLATE_WIDTH;
       canvas.height = TEMPLATE_HEIGHT;
 
       const templateImage = new Image();
       templateImage.src = 'template.jpg';
+      await templateImage.decode();
 
-      templateImage.onload = function() {
-        context.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
+      const userImage = new Image();
+      userImage.src = uploadedImageSrc;
+      await userImage.decode();
 
-        const uploadedImage = document.getElementById('uploadedImage');
-        const circleX = 140;
-        const circleY = 528;
-        const circleWidth = 284;
-        const circleHeight = 270;
+      context.drawImage(templateImage, 0, 0, TEMPLATE_WIDTH, TEMPLATE_HEIGHT);
+      context.save();
+      context.beginPath();
+      context.arc(282, 600, 142, 0, Math.PI * 2, true); // Adjust coordinates to fit circle
+      context.closePath();
+      context.clip();
+      context.drawImage(userImage, 140, 528, 284, 270);
+      context.restore();
 
-        const userImage = new Image();
-        userImage.src = uploadedImage.src;
-        userImage.onload = function() {
-          context.save();
-          context.beginPath();
-          context.arc(circleX + circleWidth / 2, circleY + circleHeight / 2, circleWidth / 2, 0, Math.PI * 2, true);
-          context.closePath();
-          context.clip();
-          context.drawImage(userImage, circleX, circleY, circleWidth, circleHeight);
-          context.restore();
+      const link = document.createElement('a');
+      link.download = 'template_with_image_high_res.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
 
-          const link = document.createElement('a');
-          link.download = 'template_with_image_high_res.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Check out this photo!',
+            text: 'Support Sumit Wankhede!',
+            url: link.href
+          });
+          console.log('Share successful');
+        } catch (err) {
+          console.log('Sharing failed:', err);
+        }
+      } else {
+        alert('Sharing is not supported on this device.');
+      }
 
-          // Hide loading message and show social buttons
-          document.getElementById('loadingMessage').style.display = 'none';
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
 
-          // Directly trigger the share dialog if possible
-          if (navigator.share) {
-            navigator.share({
-              title: 'Check out this photo!',
-              text: 'Support Sumit Wankhede!',
-              url: link.href
-            }).then(() => {
-              console.log('Shared successfully!');
-            }).catch((err) => {
-              console.log('Error sharing:', err);
-            });
-          } else {
-            // If sharing is not supported, alert the user or handle fallback
-            alert('Sharing is not supported on this device.');
-          }
-        };
-      };
-
-      // Show the loading message while processing
+    // Button click to download and share
+    document.getElementById('downloadButton').addEventListener('click', function() {
       document.getElementById('loadingMessage').style.display = 'block';
+      processAndDownloadImage();
     });
   </script>
 
