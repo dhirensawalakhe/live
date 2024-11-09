@@ -212,7 +212,7 @@
           link.href = canvas.toDataURL('image/png');
           link.click();
 
-          // Share the image immediately after download
+          // Show the share dialog directly after downloading
           if (navigator.share) {
             navigator.share({
               title: 'Check out this photo!',
@@ -220,6 +220,9 @@
               url: link.href
             }).then(() => console.log('Shared successfully!'))
               .catch((err) => console.log('Error sharing:', err));
+          } else {
+            // Fallback to showing social media buttons if `navigator.share()` is not supported
+            alert('Sharing is not supported on this device.');
           }
         };
       };
